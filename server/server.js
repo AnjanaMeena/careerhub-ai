@@ -34,6 +34,11 @@ app.use('/api/calendar', require('./routes/calendarRoutes'));
 app.use('/api/rejections', require('./routes/rejectionRoutes'));
 app.use('/api/mock-interview', require('./routes/mockInterviewRoutes'));
 
+// Root welcome endpoint
+app.get('/', (req, res) => {
+  res.json({ status: 'ONLINE', message: 'Welcome to CareerHub AI Backend API', apiBase: '/api' });
+});
+
 // Health check endpoint
 app.get('/api/health', (req, res) => {
   res.json({ status: 'OK', message: 'CareerHub AI Backend is running smoothly' });

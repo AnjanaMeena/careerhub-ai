@@ -1,0 +1,25 @@
+# Dependencies
+node_modules/
+client/node_modules/
+server/node_modules/
+
+# Environment Variables & Secrets (CRITICAL)
+.env
+*.env
+server/.env
+server/.env.local
+
+# Production Builds
+dist/
+client/dist/
+build/
+
+# Uploaded Media & Temporary Files
+server/uploads/*
+!server/uploads/.gitkeep
+scratch/
+*.log
+
+# OS Metadata
+.DS_Store
+Thumbs.db

@@ -1,0 +1,19 @@
+{
+  "name": "careerhub-ai",
+  "version": "1.0.0",
+  "description": "CareerHub AI - AI-Powered Campus Opportunity & Career Management Platform",
+  "main": "server/server.js",
+  "scripts": {
+    "install:all": "npm install && cd server && npm install && cd ../client && npm install",
+    "seed": "node server/utils/seedAdmin.js",
+    "server": "cd server && npm start",
+    "client": "cd client && npm run dev",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  },
+  "keywords": ["mern", "react", "express", "mongodb", "careerhub", "gemini-ai"],
+  "author": "CareerHub AI",
+  "license": "MIT"
+}

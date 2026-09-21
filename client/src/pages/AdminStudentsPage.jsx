@@ -1,9 +1,19 @@
 import React, { useState, useEffect } from 'react';
-import { Users, Search, Eye, Trash2, X, GraduationCap, Award, BookOpen, ExternalLink, Mail, Phone } from 'lucide-react';
+import { Users, Search, Eye, Trash2, X, GraduationCap, Award, BookOpen, ExternalLink, Mail, Phone, FileText } from 'lucide-react';
 import LoadingSpinner from '../components/LoadingSpinner';
 import EmptyState from '../components/EmptyState';
 import api from '../services/api';
 import toast from 'react-hot-toast';
+
+const getResumeUrl = (url) => {
+  if (!url) return '';
+  if (url.startsWith('http://') || url.startsWith('https://')) return url;
+  
+  // Clean base URL from API endpoint
+  const apiBase = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+  const serverHost = apiBase.replace(/\/api\/?$/, '');
+  return `${serverHost}${url.startsWith('/') ? '' : '/'}${url}`;
+};
 
 const AdminStudentsPage = () => {
   const [students, setStudents] = useState([]);
@@ -86,7 +96,8 @@ const AdminStudentsPage = () => {
                   <th className="py-4 px-6">Student Name</th>
                   <th className="py-4 px-6">Department & Year</th>
                   <th className="py-4 px-6">CGPA</th>
-                  <th className="py-4 px-6">Profile Completion</th>
+                  <th className="py-4 px-6">Resume</th>
+                  <th className="py-4 px-6">Completion</th>
                   <th className="py-4 px-6 text-right">Actions</th>
                 </tr>
               </thead>
@@ -110,8 +121,23 @@ const AdminStudentsPage = () => {
                     </td>
                     <td className="py-4 px-6 text-xs font-bold text-indigo-600">{st.cgpa || 'N/A'}</td>
                     <td className="py-4 px-6">
+                      {st.resumeUrl ? (
+                        <a
+                          href={getResumeUrl(st.resumeUrl)}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="inline-flex items-center space-x-1 px-2.5 py-1 bg-purple-50 text-purple-700 dark:bg-purple-950/60 dark:text-purple-300 rounded-lg text-xs font-bold hover:bg-purple-100 transition-colors"
+                        >
+                          <FileText className="w-3.5 h-3.5" />
+                          <span>View PDF</span>
+                        </a>
+                      ) : (
+                        <span className="text-[11px] text-slate-400 font-medium italic">No Resume</span>
+                      )}
+                    </td>
+                    <td className="py-4 px-6">
                       <div className="flex items-center space-x-2">
-                        <div className="w-24 bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
+                        <div className="w-20 bg-slate-200 dark:bg-slate-700 h-2 rounded-full overflow-hidden">
                           <div className="bg-purple-600 h-2 rounded-full" style={{ width: `${st.profileCompletion || 20}%` }}></div>
                         </div>
                         <span className="text-xs font-bold">{st.profileCompletion || 20}%</span>
@@ -165,19 +191,19 @@ const AdminStudentsPage = () => {
               </div>
 
               <div className="grid grid-cols-2 gap-3 pt-2">
-                <div className="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border">
+                <div className="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-700">
                   <p className="text-[10px] uppercase font-bold text-slate-400">Department</p>
                   <p className="font-bold text-xs mt-0.5">{selectedStudent.department || 'N/A'}</p>
                 </div>
-                <div className="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border">
+                <div className="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-700">
                   <p className="text-[10px] uppercase font-bold text-slate-400">Academic Year</p>
-                  <p className="font-bold text-xs mt-0.5">{selectedStudent.year}</p>
+                  <p className="font-bold text-xs mt-0.5">{selectedStudent.year || 'N/A'}</p>
                 </div>
-                <div className="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border">
+                <div className="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-700">
                   <p className="text-[10px] uppercase font-bold text-slate-400">CGPA</p>
                   <p className="font-bold text-xs text-indigo-600 mt-0.5">{selectedStudent.cgpa || 0}</p>
                 </div>
-                <div className="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border">
+                <div className="p-3 bg-slate-50 dark:bg-slate-900/50 rounded-xl border border-slate-100 dark:border-slate-700">
                   <p className="text-[10px] uppercase font-bold text-slate-400">University</p>
                   <p className="font-bold text-xs mt-0.5">{selectedStudent.university || 'N/A'}</p>
                 </div>
@@ -194,25 +220,32 @@ const AdminStudentsPage = () => {
                 </div>
               </div>
 
-              {selectedStudent.resumeUrl && (
-                <div className="pt-2">
+              {/* Resume Access Box */}
+              <div className="pt-3 border-t border-slate-100 dark:border-slate-700">
+                <p className="text-[11px] uppercase font-bold text-slate-400 mb-2">Uploaded Resume Document</p>
+                {selectedStudent.resumeUrl ? (
                   <a
-                    href={selectedStudent.resumeUrl}
+                    href={getResumeUrl(selectedStudent.resumeUrl)}
                     target="_blank"
                     rel="noreferrer"
-                    className="inline-flex items-center space-x-1.5 text-xs font-bold text-indigo-600 hover:underline"
+                    className="inline-flex items-center space-x-2 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:opacity-90 text-white rounded-xl text-xs font-bold shadow-md transition-all"
                   >
-                    <span>View Resume File</span>
-                    <ExternalLink className="w-3.5 h-3.5" />
+                    <FileText className="w-4 h-4" />
+                    <span>Open & View Student Resume PDF</span>
+                    <ExternalLink className="w-3.5 h-3.5 ml-1" />
                   </a>
-                </div>
-              )}
+                ) : (
+                  <div className="p-3 bg-amber-50 dark:bg-amber-950/30 border border-amber-200/60 dark:border-amber-900/50 rounded-xl text-amber-700 dark:text-amber-300 text-xs font-medium">
+                    ⚠️ No resume file uploaded yet by this student.
+                  </div>
+                )}
+              </div>
             </div>
 
             <div className="pt-4 flex justify-end">
               <button
                 onClick={() => setShowDetailModal(false)}
-                className="px-5 py-2 rounded-xl bg-slate-100 text-slate-700 text-xs font-bold"
+                className="px-5 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-xs font-bold hover:bg-slate-200 transition-colors"
               >
                 Close
               </button>
